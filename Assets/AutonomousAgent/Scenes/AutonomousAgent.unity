@@ -554,6 +554,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1953907169}
+  - component: {fileID: 1953907172}
+  - component: {fileID: 1953907171}
   - component: {fileID: 1953907170}
   - component: {fileID: 1953907168}
   - component: {fileID: 1953907167}
@@ -670,6 +672,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 015dca741b164164ca72d47f03048a0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AutonomousAgent
+  movement: {fileID: 1953907171}
+  perception: {fileID: 1953907172}
+--- !u!114 &1953907171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1953907165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35cc5cc87801ef54091ab34e1cf81ef8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KinematicMovement
+  maxSpeed: 1
+  maxForce: 1
+--- !u!114 &1953907172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1953907165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19b425e7b0bfc3c478bab46217da8f31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DistancePerception
+  tagName: 
+  maxDistance: 0
+  maxAngle: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
