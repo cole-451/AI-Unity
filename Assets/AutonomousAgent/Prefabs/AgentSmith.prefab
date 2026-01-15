@@ -81,7 +81,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AutonomousAgent
   movement: {fileID: 8237469436194774727}
-  perception: {fileID: 3592234893857013895}
+  seekperception: {fileID: 3592234893857013895}
+  fleeperception: {fileID: 0}
 --- !u!33 &7787683890071466655
 MeshFilter:
   m_ObjectHideFlags: 0

@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 4444263950849727175}
   m_Layer: 0
   m_Name: AgentBrown
-  m_TagString: AgentSmith
+  m_TagString: AgentBrown
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -81,7 +81,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AutonomousAgent
   movement: {fileID: 8361556261217568536}
-  perception: {fileID: 2737995811188318770}
+  seekperception: {fileID: 0}
+  fleeperception: {fileID: 2737995811188318770}
 --- !u!33 &6197768101897720159
 MeshFilter:
   m_ObjectHideFlags: 0
