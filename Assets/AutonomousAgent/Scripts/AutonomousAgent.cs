@@ -20,7 +20,11 @@ public class AutonomousAgent : AIAgent
 
     [SerializeField] float wanderDisplacement = 1;
 
-    [Header("Flocking")]
+    [Header("Flock")]
+    [SerializeField, Range(0, 5)] float cohesionWeight = 1;
+    [SerializeField, Range(0, 5)] float separationWeight = 1;
+    [SerializeField, Range(0, 5)] float alignmentWeight = 1;
+    [SerializeField, Range(0, 5)] float separationRadius = 1;
 
 
 
@@ -87,6 +91,18 @@ public class AutonomousAgent : AIAgent
             movement.ApplyForce(force);
         }
         }
+        //flocking code being used here
+        if (flockPerception != null)
+        {
+            var gameObjects = flockPerception.GetGameObjects();
+            if (gameObjects.Length > 0)
+            {
+                hasTarget = true;
+                movement.ApplyForce(Cohesion(gameObjects) * cohesionWeight);
+                movement.ApplyForce(Separation(gameObjects, separationRadius) * separationWeight);
+                movement.ApplyForce(Alignment(gameObjects) * alignmentWeight);
+            }
+        }
         // if no target then wander 
 
         if (!hasTarget)
@@ -141,7 +157,7 @@ public class AutonomousAgent : AIAgent
         foreach (var n in neighbors)
 	    {
         // add neighbor position to positions
-        n.transform.position = positions;
+        positions += n.transform.position;
 
         }
 
@@ -166,7 +182,7 @@ public class AutonomousAgent : AIAgent
         foreach (var n in neighbors)
 	{
             // get direction vector away from neighbor
-            Vector3 direction = -n.transform.position ;//< direction vector pointing away from neighbor ??? >;
+            Vector3 direction = transform.position - n.transform.position ;//< direction vector pointing away from neighbor ??? >;
             float distance = direction.magnitude;
         // check if within separation radius
         if (distance > 0 && distance < radius )//< distance greater than 0 and less than radius>)
@@ -183,29 +199,29 @@ public class AutonomousAgent : AIAgent
         return force;
     }
     // NEED HELP!!!
- //   private Vector3 Alignment(GameObject[] neighbors)
- //   {
- //       Vector3 velocities = Vector3.zero;
- //       // accumulate the velocity vectors of the neighbors
- //       foreach (GameObject n in neighbors)
-	//{
- //           // get the velocity from the agent movement
- //           if (TryGetComponent<AutonomousAgent>(out GameObject n)/*< get AutonomousAgent component from GameObject neighbor, use TryGetComponent>*/)
-	//	{
- //               // add agent movement velocity to velocities
- //               velocities += movement.Velocity;
+    private Vector3 Alignment(GameObject[] neighbors)
+    {
+        Vector3 velocities = Vector3.zero;
+       // accumulate the velocity vectors of the neighbors
+       foreach (GameObject n in neighbors)
+	{
+           // get the velocity from the agent movement
+           if (n.TryGetComponent<AutonomousAgent>(out AutonomousAgent comp)/*< get AutonomousAgent component from GameObject neighbor, use TryGetComponent>*/)
+		{
+                // add agent movement velocity to velocities
+                velocities += movement.Velocity;
 
- //       }
- //       }
+        }
+       }
  //       // get the average velocity of the neighbors
- //       Vector3 averageVelocity = neighbors.Average(n => movement.Velocity);
+       Vector3 averageVelocity = velocities / neighbors.Length; 
 
- //       // steer towards the average velocity
- //       Vector3 force = < steer towards average velocity >
+        // steer towards the average velocity
+        Vector3 force = GetSteeringForce(averageVelocity);
 
 
- //   return force;
- //   }
+    return force;
+    }
 
 
 }
