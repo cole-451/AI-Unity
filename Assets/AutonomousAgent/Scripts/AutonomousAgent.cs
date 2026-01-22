@@ -1,13 +1,16 @@
 
-
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class AutonomousAgent : AIAgent
 {
     [SerializeField] Movement movement;
     [SerializeField] Perception seekperception;
     [SerializeField] Perception fleeperception;
+    [SerializeField] Perception flockPerception;
 
     [Header("Wander")]
 
@@ -16,6 +19,9 @@ public class AutonomousAgent : AIAgent
     [SerializeField] float wanderDistance = 1;
 
     [SerializeField] float wanderDisplacement = 1;
+
+    [Header("Flocking")]
+
 
 
 
@@ -32,13 +38,13 @@ public class AutonomousAgent : AIAgent
 
         // randomly adjust the wander angle within (+/-) displacement range 
 
-        wanderAngle += wanderAngle - wanderDisplacement - wanderDisplacement;
+        wanderAngle += Random.Range(-wanderDisplacement, wanderDisplacement);
 
         // calculate a point on the wander circle using the wander angle 
 
         UnityEngine.Quaternion rotation = UnityEngine.Quaternion.AngleAxis(wanderAngle, UnityEngine.Vector3.up);
 
-        UnityEngine.Vector3 pointOnCircle = rotation * (Vector3.forward *wanderRadius);
+        UnityEngine.Vector3 pointOnCircle = rotation * (Vector3.forward * wanderRadius);
 
         // project the wander circle in front of the agent 
 
@@ -46,7 +52,7 @@ public class AutonomousAgent : AIAgent
 
         // steer toward the target point (circle center + point on circle) 
 
-        UnityEngine.Vector3 force = GetSteeringForce(circleCenter+ pointOnCircle );
+        UnityEngine.Vector3 force = GetSteeringForce(circleCenter + pointOnCircle );
 
 
 
@@ -94,7 +100,7 @@ public class AutonomousAgent : AIAgent
         }
 
 
-        transform.position = Utilities.Wrap(transform.position, new Vector3(-15, -15, -15), new Vector3 (15,15,15));
+        transform.position = Utilities.Wrap(transform.position, new Vector3(-15, 0, -15), new Vector3 (15,0,15));
         if (movement.Velocity.sqrMagnitude > 0)
         {
             transform.rotation = Quaternion.LookRotation(movement.Velocity, Vector3.up);
@@ -126,4 +132,80 @@ public class AutonomousAgent : AIAgent
         return force;
 
     }
+
+    private Vector3 Cohesion(GameObject[] neighbors)
+    {
+        Vector3 positions = Vector3.zero;
+        
+        // accumulate the position vectors of the neighbors
+        foreach (var n in neighbors)
+	    {
+        // add neighbor position to positions
+        n.transform.position = positions;
+
+        }
+
+        // average the positions to get the center of the neighbors
+        Vector3 center = positions / neighbors.Length;
+        // create direction vector to point towards the center of the neighbors from agent position
+        Vector3 direction = center - transform.position;
+
+        // steer towards the center point
+        Vector3 force = GetSteeringForce(direction);
+
+
+    return force;
+    }
+
+
+
+    private Vector3 Separation(GameObject[] neighbors, float radius)
+    {
+        Vector3 separation = Vector3.zero;
+        // accumulate the separation vectors of the neighbors
+        foreach (var n in neighbors)
+	{
+            // get direction vector away from neighbor
+            Vector3 direction = -n.transform.position ;//< direction vector pointing away from neighbor ??? >;
+            float distance = direction.magnitude;
+        // check if within separation radius
+        if (distance > 0 && distance < radius )//< distance greater than 0 and less than radius>)
+		{
+                // scale separation vector inversely proportional to the direction distance
+                // closer the distance the stronger the separation
+                separation += direction * (1 / distance);
+            }
+        }
+
+        // steer towards the separation point
+        Vector3 force = (separation.magnitude > 0/*< separation length is greater than 0 >*/) ? GetSteeringForce(separation) : Vector3.zero;
+
+        return force;
+    }
+    // NEED HELP!!!
+ //   private Vector3 Alignment(GameObject[] neighbors)
+ //   {
+ //       Vector3 velocities = Vector3.zero;
+ //       // accumulate the velocity vectors of the neighbors
+ //       foreach (GameObject n in neighbors)
+	//{
+ //           // get the velocity from the agent movement
+ //           if (TryGetComponent<AutonomousAgent>(out GameObject n)/*< get AutonomousAgent component from GameObject neighbor, use TryGetComponent>*/)
+	//	{
+ //               // add agent movement velocity to velocities
+ //               velocities += movement.Velocity;
+
+ //       }
+ //       }
+ //       // get the average velocity of the neighbors
+ //       Vector3 averageVelocity = neighbors.Average(n => movement.Velocity);
+
+ //       // steer towards the average velocity
+ //       Vector3 force = < steer towards average velocity >
+
+
+ //   return force;
+ //   }
+
+
 }
